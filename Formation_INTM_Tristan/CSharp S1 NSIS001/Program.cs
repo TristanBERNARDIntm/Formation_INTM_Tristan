@@ -10,6 +10,21 @@ namespace CSharp_S1_NSIS001
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Donner un entier");
+            string a = Console.ReadLine();
+            int entier = int.Parse(a);
+
+            while(entier != 0)
+            {
+                entier -= 2;
+                Console.WriteLine(entier);
+            }
+
+
+            Console.ReadKey();
+
+
+               
         }
     }
 }

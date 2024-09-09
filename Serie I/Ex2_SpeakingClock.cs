@@ -11,8 +11,8 @@ namespace Serie_I
         public static string GoodDay(int heure)
         {
             string message;
-            switch (heure)
-            {
+            switch (heure) //détermination de l'heure
+            {   
                 case 0:
                 case 1:
                 case 2:
@@ -57,7 +57,7 @@ namespace Serie_I
                 break;
 
             }
-            Console.WriteLine($"Il est {heure} h, {message}");
+            Console.WriteLine($"Il est {heure}h, {message}");
             return string.Empty;
         }
     }

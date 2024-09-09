@@ -14,7 +14,7 @@ namespace Serie_I
             int j = 1;
             int i = 1;
             int r = 0;
-            for (i = 1; i < n; i++)
+            for (i = 1; i <= n; i++)
             {
                 r = i % 2;
                 for (j = 1 ; j <= n - i ; j++)
@@ -23,10 +23,17 @@ namespace Serie_I
                 }
                 for (j = 1; j <= 2 * i - 1; j++)
                 {
-                   
-     
-                    Console.Write("+");
-                 
+                    if (isSmooth == false)
+                    {
+                        if (r == 0)
+                        { Console.Write("-"); }
+                        else
+                        { Console.Write("+"); }
+                    }
+                    else
+                    {
+                        Console.Write("+");
+                    }
                 }
                 Console.Write("\n");
             }

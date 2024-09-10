@@ -10,14 +10,38 @@ namespace Serie_I
     {
         public static int Factorial_(int n)
         {
-            //TODO
-            return -1;
+            int factorielle = n;
+            if (n <= 1)
+            {
+                return 1;
+            }
+            else if (n < 0)
+            {
+                return -1;
+            }
+            else
+            {
+                for (int i = (n-1); i >= 1; i--)
+                {
+                    factorielle *= i;
+                }
+                return factorielle;
+            }
         }
-
         public static int FactorialRecursive(int n)
         {
-            //TODO
-            return -1;
+            if (n <= 1)
+            {
+                return 1;
+            }
+            else if (n < 0)
+            {
+                return -1;
+            }
+            else
+            {
+                return n * FactorialRecursive(n - 1);
+            }
         }
     }
 }

@@ -79,7 +79,7 @@ namespace Serie_I
             }
         }
 
-    public static void Pow(int a, int b)
+    public static void Pow(int a, double b)
         {
         int p = a;
         if (b < 0) //si la puissance est négative, on ne traite pas l'opération

@@ -57,16 +57,16 @@ namespace Serie_I
             Console.WriteLine("Exercice IV - Factorielle");
             Console.WriteLine("-------------------------");
 
-            int number;
+            int n;
             do
             {
                 Console.WriteLine("Saisir un nombre");
                 input = Console.ReadLine();
 
-            } while (!int.TryParse(input, out number));
+            } while (!int.TryParse(input, out n));
 
-            Console.WriteLine($"Factorielle de {number} : {Factorial.Factorial_(number)}");
-            Console.WriteLine($"Factorielle de {number} : {Factorial.FactorialRecursive(number)} [R]");
+            Console.WriteLine($"Factorielle de {n} : {Factorial.Factorial_(n)}");
+            Console.WriteLine($"Factorielle de {n} : {Factorial.FactorialRecursive(n)} [R]");
             #endregion
 
             #region Exercice V - Les nombres premiers

@@ -29,21 +29,25 @@ namespace Serie_II
                 if (tableau[moit] < valeur)
                 {
                     moit += moit/2;
-                    continue;
+              //      continue;
                 }
                 else if (tableau[moit] > valeur)
                 {
                     moit -= moit/2;
-                    continue;
+             //       continue;
                 }
                 else
                 {
                     trouvé = true;
                     return moit;
                 }
+                if (tableau[moit] == 0 && trouvé == false)
+                    return -1;
 
+                if (tableau[moit] == tableau.Length && trouvé == false)
+                    return -1;
             }
-            return -1;
+      //      return -1;
         }
     }
 }

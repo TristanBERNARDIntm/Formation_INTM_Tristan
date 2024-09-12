@@ -27,32 +27,33 @@ namespace Serie_II
 
         public static int BinarySearch(int[] tableau, int valeur)
         {
+            int d = tableau.Length;
             int moit = tableau.Length / 2;
+            int moit2 = moit;
             bool trouvé = false;
             while (trouvé == false)
             {
                 if (tableau[moit] < valeur)
                 {
-                    moit += moit/2;
-              //      continue;
+                    moit2 = (moit+d)/2;
                 }
                 else if (tableau[moit] > valeur)
                 {
-                    moit -= moit/2;
-             //       continue;
+                    d = moit;
+                    moit2 = moit / 2;
                 }
                 else
                 {
                     trouvé = true;
-                    return moit;
+                    return moit2;
                 }
-                if (tableau[moit] == 0 && trouvé == false)
+                if (moit2 == moit)
+                {
                     return -1;
-
-                if (tableau[moit] == tableau.Length && trouvé == false)
-                    return -1;
+                }
+                moit = moit2;
             }
-      //      return -1;
+            return -1;
         }
     }
 }

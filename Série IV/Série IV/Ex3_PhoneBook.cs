@@ -5,13 +5,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Serie_IV
+namespace Série_IV
 {
     public class PhoneBook
     {
         private bool IsValidPhoneNumber(string phoneNumber)
         {
-            //TODO
+            if (phoneNumber.Length != 10 ||phoneNumber )
+            {
+                return false;
+            }
             return false;
         }
 

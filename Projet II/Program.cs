@@ -15,12 +15,7 @@ namespace Projet_II
         {
 
             //chemin d'accès fichiers
-            /*string fcomptes = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.csv";
-            string ftransactions = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Transactions.csv";
-            string fstatuts = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\StatutsTransactions.csv";
-            string fgest = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Gestionnaires.csv";
-            string fresult = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Resultats.txt";
-          */string fcomptes = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.csv";
+            string fcomptes = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.csv";
             string ftransactions = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Transactions.csv";
             string fstatuts = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\StatutsTransactions.csv";
             string fgest = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Gestionnaires.csv";

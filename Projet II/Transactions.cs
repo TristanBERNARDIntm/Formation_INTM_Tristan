@@ -45,7 +45,7 @@ namespace Projet_II
         {
             if (VerifSolde(montant,CExp))
             {
-                if (GExp.typeGest == "Particuliers" && GExp.numGest != GDes.numGest)
+                if (GExp.typeGest == "Particulier" && GExp.numGest != GDes.numGest)
                 {
                     decimal fraisP = (decimal)0.01 * montant;
                     CExp.solde -= montant - fraisP;

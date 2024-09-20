@@ -21,7 +21,7 @@ namespace Projet_II
 			typeGest = string.Empty;
 			NbTransGest = 0;
 			FraisGest = new List<decimal>();
-
         }
 	}
 }
+

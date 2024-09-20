@@ -15,11 +15,16 @@ namespace Projet_II
         {
 
             //chemin d'accès fichiers
-            string fcomptes = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.csv";
+            /*string fcomptes = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.csv";
             string ftransactions = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Transactions.csv";
             string fstatuts = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\StatutsTransactions.csv";
             string fgest = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Gestionnaires.csv";
             string fresult = @"C:\Users\FORMATION\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Resultats.txt";
+          */string fcomptes = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.csv";
+            string ftransactions = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Transactions.csv";
+            string fstatuts = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\StatutsTransactions.csv";
+            string fgest = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Gestionnaires.csv";
+            string fresult = @"C:\Users\Tristan\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Resultats.txt";
 
             //compteurs 
             int cptok = 0;
@@ -104,10 +109,8 @@ namespace Projet_II
                                     if (Tools.VerifDate(Date)          
                                         &&EntréeExistant 
                                         && !CompteExistant 
-                                        && val[3] != string.Empty 
-                                        | Entrée != 0 
-                                        && val[4] == string.Empty 
-                                        | Sortie == 0)
+                                        && val[3] != string.Empty | Entrée != 0
+                                        && val[4] == string.Empty | Sortie == 0)
                                     {
                                         Comptes compte = new Comptes();
                                         cpts.Add(compte);
@@ -123,10 +126,8 @@ namespace Projet_II
                                     //Suppression d'un compte
                                     if (SortieExistant                                          
                                         && CompteExistant 
-                                        && val[3] == string.Empty 
-                                        | Entrée == 0 
-                                        && val[4] != string.Empty 
-                                        | Sortie != 0)
+                                        && val[3] == string.Empty | Entrée == 0
+                                        && val[4] != string.Empty | Sortie != 0)
                                     {
                                         Comptes CompteCloture = cpts.Find(c => c.num == NumCpt);
                                         cpts.Remove(CompteCloture);
@@ -590,3 +591,4 @@ namespace Projet_II
         }
     }
 }
+

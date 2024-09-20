@@ -41,13 +41,30 @@ namespace Projet_II
             return false;
         }
 
-        public static bool Virement(decimal montant, Comptes CExp, Comptes CDes)
+        public static bool Virement(decimal montant, Comptes CExp, Gestionnaires GExp, Comptes CDes, Gestionnaires GDes)
         {
             if (VerifSolde(montant,CExp))
             {
-                CExp.solde -= montant;
-                CDes.solde += montant;
-                return true;
+                if (GExp.typeGest == "Particuliers" && GExp.numGest != GDes.numGest)
+                {
+                    decimal fraisP = (decimal)0.01 * montant;
+                    CExp.solde -= montant - fraisP;
+                    CDes.solde += montant;
+                    GExp.FraisGest.Add(fraisP);
+                    return true;
+                }
+                else if (GExp.typeGest == "Entreprise" && GExp.numGest != GDes.numGest)
+                {
+                    decimal fraisF = 10;
+                    CExp.solde -= montant - fraisF;
+                    CDes.solde += montant;
+                    GExp.FraisGest.Add(fraisF);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             return false;
         }
@@ -69,35 +86,35 @@ namespace Projet_II
                     somme = compte.historique.Sum();
                     if (somme <= 1000)
                     {
-                        return true;
+                        return false;
                     }
                     else
                     {
-                        return false;
+                        return true;
                     }
                 }
-                else if (compte.historique.Count >= NbTransac)
+                else if (compte.historique.Count <= NbTransac)
                 {
                     compte.historique.RemoveAt(0);
                     compte.historique.Add(montant);
                     somme = compte.historique.Sum();
                     if (somme <= 1000)
                     {
-                        return true;
+                        return false;
                     }
                     else
                     {
-                        return false;
+                        return true;
                     }
                 }
                 else
                 {
-                    return false;
+                    return true;
                 }
             }
             catch(IndexOutOfRangeException)
             {
-                return false;
+                return true;
             }
         }
     }

@@ -13,12 +13,15 @@ namespace Projet_II
 		public int numGest { get; set; }
 		public string typeGest { get; set; }
 		public int NbTransGest { get; set; }
+		public List<decimal> FraisGest { get; set; }
 
 		public Gestionnaires()
 		{
 			numGest = 0;
 			typeGest = string.Empty;
 			NbTransGest = 0;
-		}
+			FraisGest = new List<decimal>();
+
+        }
 	}
 }

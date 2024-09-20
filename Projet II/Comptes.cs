@@ -14,7 +14,6 @@ namespace Projet_II
         public decimal solde { get; set; }
         public int entrée { get; set; }
         public int sortie { get; set; }
-        public static int NombreComptes { get; set; }
         public int gestionnaire { get; set; }
         public List<decimal> historique { get; set; }
 
@@ -25,9 +24,17 @@ namespace Projet_II
             solde = 0;
             entrée = 0;
             sortie = 0;
-            NombreComptes++;
             gestionnaire = 0;
             historique = new List<decimal>();
+        }
+    }
+    public class ComptesClots : Comptes
+    {
+        public DateTime DateClot { get; set; }
+
+        public ComptesClots()
+        {
+            DateClot = DateTime.MinValue;
         }
     }
 }

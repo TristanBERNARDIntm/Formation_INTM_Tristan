@@ -29,9 +29,9 @@ namespace Projet_I
                     val = ligne.Split(';');               
 
                     bool entierNum = int.TryParse(val[0], out int NumCpt);
-                    bool decimalSolde = decimal.TryParse(val[2], out decimal Solde);
+                    bool decimalSolde = decimal.TryParse(val[1], out decimal Solde); // pas val[2]  val[1]
                     
-                    if (entierNum && decimalSolde || val[2] == string.Empty)
+                    if (entierNum && decimalSolde || val[1] == string.Empty)
                     {
                         bool CompteExistant = cpts.Any(c => c.num == NumCpt);
                         if (!CompteExistant && NumCpt > 0)
@@ -106,8 +106,8 @@ namespace Projet_I
                 {
                     foreach (Comptes c in cpts)
                     {
-                    bool CompteExped = cpts.Any(e => e.num == exp);
-                    bool CompteDesti = cpts.Any(d => d.num == des);
+                        bool CompteExped = cpts.Any(e => e.num == exp);
+                        bool CompteDesti = cpts.Any(d => d.num == des);
                         if (CompteExped && CompteDesti)
                         {
                             Comptes CExp = cpts.Find(e => e.num == exp);

@@ -55,7 +55,7 @@ namespace Projet_I
 
         public static bool VerifSolde(decimal montant, Comptes CExp)
         {
-            return CExp.solde > montant;
+            return CExp.solde >= montant; // oubli de l'égalité - solde peut être nul.
         }
             
     }

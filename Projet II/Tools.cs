@@ -47,6 +47,45 @@ namespace Projet_II
 				return false;
 			}
         }
+
+		public static bool VerifGestionnaire(string[] val, List<Gestionnaires> listeGestionnaires)
+		{
+            bool entier0 = int.TryParse(val[0], out int NumGest);
+            string type = val[1];
+            bool entier2 = int.TryParse(val[2], out int n);
+            bool GestionnaireExistant = listeGestionnaires.Any(c => c.numGest == NumGest);
+
+            if (val.Length == 3
+				&& entier0
+				&& !GestionnaireExistant
+				&& entier2
+				&& NumGest > 0
+				&& type == "Particulier" | type == "Entreprise")
+				return true;
+
+            return false;
+		}
+
+		public static bool VerifComptes(string[] val)
+		{
+            bool entierNum = int.TryParse(val[0], out int NumCpt);
+            bool dateDate = DateTime.TryParse(val[1], out DateTime Date);
+            string val2 = val[2].Replace(".", ",");
+            bool decimalSolde = decimal.TryParse(val2, out decimal Solde);
+            bool entierEntrée = int.TryParse(val[3], out int Entrée);
+            bool entierSortie = int.TryParse(val[4], out int Sortie);
+
+			if (val.Length == 5
+				&& entierNum
+				&& dateDate
+				&& decimalSolde | val[2] == string.Empty
+				&& entierEntrée | val[3] == string.Empty
+				&& entierSortie | val[4] == string.Empty
+				&& NumCpt > 0
+				&& Tools.VerifDate(Date)) 
+				return true;
+			return false;
+        }
 	}
 }
 

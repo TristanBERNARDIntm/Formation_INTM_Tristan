@@ -22,6 +22,30 @@ namespace Projet_II
 			NbTransGest = 0;
 			FraisGest = new List<decimal>();
         }
+
+		public static void LectureGestionnaire(string fgest, List<Gestionnaires> listeGestionnaires)
+		{
+            using (StreamReader sr = new StreamReader(fgest))
+            {
+                string ligne = sr.ReadLine();
+                string[] val;
+
+                while (ligne != null) 
+                {
+                    val = ligne.Split(';');  
+                    
+                    if (Tools.VerifGestionnaire(val, listeGestionnaires))
+                    {
+                        Gestionnaires gestion = new Gestionnaires();
+                        listeGestionnaires.Add(gestion);
+                        gestion.numGest = int.Parse(val[0]);
+                        gestion.typeGest = val[1];
+                        gestion.NbTransGest = int.Parse(val[2]);
+                    }
+                    ligne = sr.ReadLine();
+                }
+            }
+        }
 	}
 }
 

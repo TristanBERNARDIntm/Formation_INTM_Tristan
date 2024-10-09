@@ -29,7 +29,7 @@ namespace Projet_II
             historique = new List<decimal>();
             NbComptes++;
         }
-
+        //recup des variables du fichier Comptes dans une liste 
         public static void LectureComptes(string fcomptes, List<Comptes> cpts, List<ComptesClots> cpClot, List<Gestionnaires> listeGestionnaires)
         {
             using (StreamReader sr = new StreamReader(fcomptes))
@@ -42,7 +42,7 @@ namespace Projet_II
                     try
                     {
                         val = ligne.Split(';');
-                        if (Tools.VerifComptes(val))
+                        if (Tools.VerifComptes(val)) //verification de la conformité des variables
                         {
                             bool entierNum = int.TryParse(val[0], out int NumCpt);
                             bool dateDate = DateTime.TryParse(val[1], out DateTime Date);
@@ -61,7 +61,7 @@ namespace Projet_II
                                 && val[3] != string.Empty | Entrée != 0
                                 && val[4] == string.Empty | Sortie == 0)
                             {
-                                Comptes.Creation(cpts, NumCpt, Date, Solde, Entrée, Sortie);
+                                Comptes.Creation(cpts, NumCpt, Date, Solde, Entrée, Sortie); 
                             }
 
                             //Suppression d'un compte
@@ -70,7 +70,7 @@ namespace Projet_II
                                 && val[3] == string.Empty | Entrée == 0
                                 && val[4] != string.Empty | Sortie != 0)
                             {
-                                ComptesClots.Cloture(cpts, cpClot, NumCpt, Date, Solde, Entrée, Sortie);
+                                ComptesClots.Cloture(cpts, cpClot, NumCpt, Date, Solde, Entrée, Sortie); 
                             }
 
                             //Cession d'un compte
@@ -84,7 +84,7 @@ namespace Projet_II
 
                                 if (CompteCede) //si le gestionnaire du compte a cedé existe
                                 {
-                                    Comptes.Cession(cpts, NumCpt, Sortie);
+                                    Comptes.Cession(cpts, NumCpt, Sortie); 
                                 }
                             }                         
                         }                     
@@ -98,7 +98,7 @@ namespace Projet_II
                 }
             }
         }
-
+        //ajout du compte à la liste de comptes actifs
         public static void Creation(List<Comptes> cpts, int NumCpt, DateTime Date, decimal Solde, int Entrée, int Sortie)
         {
             Comptes compte = new Comptes();
@@ -109,7 +109,7 @@ namespace Projet_II
             compte.entrée = Entrée;
             compte.gestionnaire = Entrée;
         }
-
+        //changement de gestionnaire dans la liste de comptes actifs
         public static void Cession(List<Comptes> cpts, int NumCpt, int Sortie)
         {
             Comptes CompteEchange = cpts.Find(c => c.num == NumCpt);
@@ -126,7 +126,7 @@ namespace Projet_II
             DateClot = DateTime.MinValue;
             NbComptes--;
         }
-
+        //suppression du compte de la liste de comptes actifs et ajout à celle des comptes cloturés
         public static void Cloture(List<Comptes> cpts, List<ComptesClots> cpClot, int NumCpt, DateTime Date, decimal Solde, int Entrée, int Sortie)
         {
             Comptes CompteCloture = cpts.Find(c => c.num == NumCpt);

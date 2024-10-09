@@ -11,6 +11,7 @@ namespace Projet_II
 
 	public static class Tools
 	{
+		//vérification de la conformité de la date
 		public static bool VerifDate(DateTime date)
 		{
 			try
@@ -47,8 +48,8 @@ namespace Projet_II
 				return false;
 			}
         }
-
-		public static bool VerifGestionnaire(string[] val, List<Gestionnaires> listeGestionnaires)
+        //vérification de la conformité des variables du Gestionnaire
+        public static bool VerifGestionnaire(string[] val, List<Gestionnaires> listeGestionnaires)
 		{
             bool entier0 = int.TryParse(val[0], out int NumGest);
             string type = val[1];
@@ -65,7 +66,7 @@ namespace Projet_II
 
             return false;
 		}
-
+		//vérification de la conformité des variables du Compte
 		public static bool VerifComptes(string[] val)
 		{
             bool entierNum = int.TryParse(val[0], out int NumCpt);
@@ -86,6 +87,24 @@ namespace Projet_II
 				return true;
 			return false;
         }
+		//vérification de la conformité des variables de la Transaction
+		public static bool VerifTransaction(string[] val)
+		{
+            bool entier0 = int.TryParse(val[0], out int idTransactions);
+            bool dateDate = DateTime.TryParse(val[1], out DateTime Date);
+            bool decimal1 = decimal.TryParse(val[2], out decimal montant);
+            bool entier2 = int.TryParse(val[3], out int Expediteur);
+            bool entier3 = int.TryParse(val[4], out int Destinataire);
+
+			if (entier0 
+				&& val.Length == 5
+                && Tools.VerifDate(Date)
+                && decimal1
+                && entier2
+                && entier3               
+                && montant > 0) return true;			
+            return false;
+		}
 	}
 }
 

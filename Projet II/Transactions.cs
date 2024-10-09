@@ -25,7 +25,7 @@ namespace Projet_II
             destinataire = 0;
             NombreTrans++;
         }     
-
+        //récupération des variables du fichier Transactions dans une liste de Transactions
         public static void LectureTransactions(string ftransactions, List<Transactions> ListeTransactions)
         {
             using (StreamReader sr = new StreamReader(ftransactions))
@@ -36,49 +36,38 @@ namespace Projet_II
                 {
                     val = ligne.Split(';');
                     bool entier0 = int.TryParse(val[0], out int idTransactions);
+                    bool dateDate = DateTime.TryParse(val[1], out DateTime Date);
+                    bool decimal1 = decimal.TryParse(val[2], out decimal montant);
+                    bool entier2 = int.TryParse(val[3], out int Expediteur);
+                    bool entier3 = int.TryParse(val[4], out int Destinataire);
+                    bool TransactionExistante = ListeTransactions.Any(c => c.id == idTransactions);
 
-                    if (entier0 && val.Length == 5)
+                    //la transaction n'existe pas et les formats des variables sont conformes
+                    if (!TransactionExistante && Tools.VerifTransaction(val))                            
                     {
-                        bool dateDate = DateTime.TryParse(val[1], out DateTime Date);
-                        bool decimal1 = decimal.TryParse(val[2], out decimal montant);
-                        bool entier2 = int.TryParse(val[3], out int Expediteur);
-                        bool entier3 = int.TryParse(val[4], out int Destinataire);
-                        bool TransactionExistante = ListeTransactions.Any(c => c.id == idTransactions);
-
-                        //la transaction n'existe pas et les formats des variables sont conformes
-                        if (!TransactionExistante
-                            && Tools.VerifDate(Date)
-                            && decimal1
-                            && entier2
-                            && entier3
-                            && Destinataire >= 0
-                            && Expediteur >= 0
-                            && montant > 0)
-                        {
-                            Transactions Transaction = new Transactions();
-                            ListeTransactions.Add(Transaction);
-                            Transaction.id = idTransactions;
-                            Transaction.DateEffet = Date;
-                            Transaction.montant = montant;
-                            Transaction.expediteur = Expediteur;
-                            Transaction.destinataire = Destinataire;
-                        }
-
-                        //si le numéro de transaction n'existe pas mais format non conforme
-                        else if (!TransactionExistante)
-                        {
-                            Transactions Transaction = new Transactions();
-                            ListeTransactions.Add(Transaction);
-                            Transaction.id = idTransactions;
-                        }
-
-                        //si le numéro de transaction existe déjà
-                        else
-                        {
-                            ligne = sr.ReadLine();
-                            continue;
-                        }
+                        Transactions Transaction = new Transactions();
+                        ListeTransactions.Add(Transaction);
+                        Transaction.id = idTransactions;
+                        Transaction.DateEffet = Date;
+                        Transaction.montant = montant;
+                        Transaction.expediteur = Expediteur;
+                        Transaction.destinataire = Destinataire;
                     }
+
+                    //si le numéro de transaction n'existe pas mais format non conforme
+                    else if (!TransactionExistante)
+                    {
+                        Transactions Transaction = new Transactions();
+                        ListeTransactions.Add(Transaction);
+                        Transaction.id = idTransactions;
+                    }
+
+                    //si le numéro de transaction existe déjà
+                    else
+                    {
+                         ligne = sr.ReadLine();
+                         continue;
+                    }                  
                     ligne = sr.ReadLine();
                 }
             }
@@ -189,8 +178,7 @@ namespace Projet_II
                         Gestionnaires GDest = listeGestionnaires.Find(dest => dest.numGest == numGDes);
 
                         //si solde suffisant et plafond non atteint
-                        if (exp != des
-                            && !Transactions.VerifMaximum(mtn, CExp, GExp))
+                        if (exp != des && !Transactions.VerifMaximum(mtn, CExp, GExp))
                         {
                             Transactions.Virement(mtn, CExp, GExp, CDest, GDest);
                             statuts.Add(idt, "OK");

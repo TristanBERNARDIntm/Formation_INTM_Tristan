@@ -10,19 +10,15 @@ using System.Threading.Tasks;
 namespace Projet_II
 {
     internal class Program
-    {//test
+    {
         static void Main(string[] args)
         {
             //chemin d'accès fichiers
-            string fcomptes = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.csv";
-            string ftransactions = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Transactions.csv";
-            string fstatuts = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\StatutsTransactions.csv";
-            string fgest = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Gestionnaires.csv"; 
+            string fcomptes = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Comptes.txt";
+            string ftransactions = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Transactions.txt";
+            string fstatuts = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\StatutsTransactions.txt";
+            string fgest = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Gestionnaires.txt"; 
             string fresult = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet II\bin\Debug\Resultats.txt";
-
-            //compteurs 
-            int NbCréaOK = 0;
-            int NbCréaKO = 0;
 
             // recupération du fichier gestionnaires dans une liste d'objet
             List<Gestionnaires> listeGestionnaires = new List<Gestionnaires>();
@@ -40,20 +36,19 @@ namespace Projet_II
 
             //traitement des transactions
             Dictionary<int,string> statuts = new Dictionary<int,string>();
-            NbCréaOK = Transactions.Traitement(statuts, ListeTransactions, cpts, cpClot, listeGestionnaires);
-            NbCréaKO = Transactions.NombreTrans - NbCréaOK;
+            Transactions.Traitement(statuts, ListeTransactions, cpts, cpClot, listeGestionnaires);          
 
             //calcul du montant total des transactions réussies
-            int RangTransac = 1;
-            decimal totMontant = 0;
-            foreach (Transactions Transac in ListeTransactions)
-            {
-                if (statuts[RangTransac] == "OK")
-                {
-                    totMontant += Transac.montant;
-                }
-                RangTransac += 1;
-            }
+           
+           // decimal totMontant = 0;
+           // foreach (Transactions Transac in ListeTransactions)
+           // {
+           //     if (statuts[RangTransac] == "OK")
+           //     {          
+           //        totMontant += Transac.montant;
+           //     }
+           //    RangTransac += 1;
+           // }
 
             //écriture des statuts de transactions
             using (StreamWriter sw = new StreamWriter(fstatuts))
@@ -70,9 +65,9 @@ namespace Projet_II
                 sw.WriteLine("Statistiques :");
                 sw.WriteLine($"Nombre de comptes : {Comptes.NbComptes}");
                 sw.WriteLine($"Nombre de transactions : {Transactions.NombreTrans}");
-                sw.WriteLine($"Nombre de réussites : {NbCréaOK}");
-                sw.WriteLine($"Nombre d'échecs : {NbCréaKO}");
-                sw.WriteLine($"Montant total des réussites : {totMontant} euros");
+                sw.WriteLine($"Nombre de réussites : {Transactions.NbTransOK}");
+                sw.WriteLine($"Nombre d'échecs : {Transactions.NbTransKO}");
+                sw.WriteLine($"Montant total des réussites : {Transactions.totMontant} euros");
                 sw.WriteLine();
                 sw.WriteLine($"Frais de gestions :");
                 foreach(Gestionnaires gestionnaire in listeGestionnaires)

@@ -16,8 +16,11 @@ namespace Projet_II
         public int expediteur { get; set; }
         public int destinataire { get; set; }
         public static int NombreTrans { get;set; }
+        public static int NbTransOK { get;set; }
+        public static int NbTransKO { get;set; }
+        public static decimal totMontant { get; set; }
 
-        public Transactions(bool isOK = false)
+        public Transactions()
         {
             id = 0;
             montant = 0; 
@@ -73,22 +76,30 @@ namespace Projet_II
             }
         }
 
-        public static void Dépot(decimal montant, Comptes CDes)
+        public static void Dépot(int idt, decimal montant, Comptes CDes, Dictionary<int, string> statuts)
         {
             CDes.solde += montant;
+            statuts.Add(idt, "OK");
+            Transactions.totMontant += montant;
+            Transactions.NbTransOK++;
         }
 
-        public static bool Retrait(decimal montant, Comptes CExp)
+        public static bool Retrait(int idt, decimal montant, Comptes CExp, Dictionary<int, string> statuts)
         {
             if (VerifSolde(montant, CExp))
             {
                 CExp.solde -= montant;
+                statuts.Add(idt, "OK");
+                Transactions.totMontant += montant;
+                Transactions.NbTransOK++;
                 return true;
             }
+            statuts.Add(idt, "KO");
+            Transactions.NbTransKO++;
             return false;
         }
 
-        public static bool Virement(decimal montant, Comptes CExp, Gestionnaires GExp, Comptes CDes, Gestionnaires GDes)
+        public static bool Virement(int idt, decimal montant, Comptes CExp, Gestionnaires GExp, Comptes CDes, Gestionnaires GDes, Dictionary<int, string> statuts)
         {
             if (VerifSolde(montant,CExp))
             {
@@ -98,6 +109,9 @@ namespace Projet_II
                     CExp.solde -= montant - fraisP;
                     CDes.solde += montant;
                     GExp.FraisGest.Add(fraisP);
+                    statuts.Add(idt, "OK");
+                    Transactions.NbTransOK++;
+                    Transactions.totMontant += montant;
                     return true;
                 }
                 else if (GExp.typeGest == "Entreprise" && GExp.numGest != GDes.numGest)
@@ -106,13 +120,14 @@ namespace Projet_II
                     CExp.solde -= montant - fraisF;
                     CDes.solde += montant;
                     GExp.FraisGest.Add(fraisF);
+                    statuts.Add(idt, "OK");
+                    Transactions.NbTransOK++;
+                    Transactions.totMontant += montant;
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
             }
+            statuts.Add(idt, "KO");
+            Transactions.NbTransKO++;
             return false;
         }
 
@@ -134,7 +149,7 @@ namespace Projet_II
                     if (somme <= 1000) return false;
                     else return true;
                 }
-                else if (compte.historique.Count == NbTransac)
+                else if (compte.historique.Count == NbTransac && NbTransac != 0)
                 {
                     compte.historique.RemoveAt(0);
                     compte.historique.Add(montant);
@@ -150,9 +165,8 @@ namespace Projet_II
             }
         }
 
-        public static int Traitement(Dictionary<int,string> statuts, List<Transactions> ListeTransactions, List<Comptes> cpts, List<ComptesClots> cpClot, List<Gestionnaires> listeGestionnaires)
+        public static void Traitement(Dictionary<int,string> statuts, List<Transactions> ListeTransactions, List<Comptes> cpts, List<ComptesClots> cpClot, List<Gestionnaires> listeGestionnaires)
         {
-            int compteur = 0;
             foreach (Transactions transac in ListeTransactions)
             {
                 int idt = transac.id;
@@ -180,11 +194,10 @@ namespace Projet_II
                         //si solde suffisant et plafond non atteint
                         if (exp != des && !Transactions.VerifMaximum(mtn, CExp, GExp))
                         {
-                            Transactions.Virement(mtn, CExp, GExp, CDest, GDest);
-                            statuts.Add(idt, "OK");
-                            compteur++;
+                            Transactions.Virement(idt,mtn, CExp, GExp, CDest, GDest, statuts);                                         
                             continue;
                         }
+                        
                     }
 
                     //au moins un des deux comptes a été fermé
@@ -211,11 +224,9 @@ namespace Projet_II
                                 && dtOuvExp <= dateEffet
                                 && dtClotDest > dateEffet)
                             {
-                                Transactions.Virement(mtn, CExp, GExp, CCDest, GCDest);
-                                statuts.Add(idt, "OK");
-                                compteur++;
+                                Transactions.Virement(idt, mtn, CExp, GExp, CCDest, GCDest, statuts);
                                 continue;
-                            }                      
+                            }
                         }
 
                         //si le compte expediteur existe et est cloturé 
@@ -236,9 +247,7 @@ namespace Projet_II
                                 && dtOuvDest <= dateEffet
                                 && dtClotDest > dateEffet)
                             {
-                                Transactions.Virement(mtn, CCExp, GCExp, CDest, GDest);
-                                statuts.Add(idt, "OK");
-                                compteur++;
+                                Transactions.Virement(idt, mtn, CCExp, GCExp, CDest, GDest, statuts);
                                 continue;
                             }
                         }
@@ -265,9 +274,7 @@ namespace Projet_II
                                 && dtOuvDest <= dateEffet
                                 && dtClotDest > dateEffet)
                             {
-                                Transactions.Virement(mtn, CCExp, GCExp, CCDest, GCDest);
-                                statuts.Add(idt, "OK");
-                                compteur++;
+                                Transactions.Virement(idt, mtn, CCExp, GCExp, CCDest, GCDest, statuts);
                                 continue;
                             }
                         }
@@ -283,9 +290,7 @@ namespace Projet_II
                     if (CompteDesti)
                     {
                         Comptes CDest = cpts.Find(d => d.num == des);
-                        Transactions.Dépot(mtn, CDest);
-                        statuts.Add(idt, "OK");
-                        compteur++;
+                        Transactions.Dépot(idt, mtn, CDest, statuts);
                         continue;
                     }
 
@@ -306,9 +311,7 @@ namespace Projet_II
                             //si la transaction a eu lieu avant la cloture
                             if (DateCloture > dateEffet && dateEffet >= DateCreation)
                             {
-                                Transactions.Dépot(mtn, CCDes);
-                                statuts.Add(idt, "OK");
-                                compteur++;
+                                Transactions.Dépot(idt, mtn, CCDes, statuts);
                                 continue;
                             }
                         }
@@ -332,9 +335,7 @@ namespace Projet_II
                         if (!Transactions.VerifMaximum(mtn, CExp, gest)
                             && DateCreation <= dateEffet)
                         {
-                            Transactions.Retrait(mtn, CExp);
-                            statuts.Add(idt, "OK");
-                            compteur++;
+                            Transactions.Retrait(idt, mtn, CExp, statuts);
                             continue;
                         }
                     }
@@ -360,17 +361,15 @@ namespace Projet_II
                                 && DateCloture > dateEffet
                                 && dateEffet >= DateCreation)
                             {
-                                Transactions.Retrait(mtn, CCExp);
-                                statuts.Add(idt, "OK");
-                                compteur++;
+                                Transactions.Retrait(idt, mtn, CCExp, statuts);
                                 continue;
                             }
                         }
-                    }                                  
+                    }
                 }
                 statuts.Add(idt, "KO");
+                Transactions.NbTransKO++;
             }
-            return compteur;
         }
     }
 }

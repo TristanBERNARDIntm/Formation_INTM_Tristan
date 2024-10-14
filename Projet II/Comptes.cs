@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -14,7 +15,7 @@ namespace Projet_II
         public decimal solde { get; set; }
         public int entrée { get; set; }
         public int sortie { get; set; }
-        public int gestionnaire { get; set; }
+        public List<KeyValuePair<int,DateTime>> gestionnaire { get; set; }
         public List<decimal> historique { get; set; }
         public static int NbComptes { get; set; }
 
@@ -25,7 +26,7 @@ namespace Projet_II
             solde = 0;
             entrée = 0;
             sortie = 0;
-            gestionnaire = 0;
+            gestionnaire = new List<KeyValuePair<int, DateTime>>();
             historique = new List<decimal>();
             NbComptes++;
         }
@@ -80,12 +81,15 @@ namespace Projet_II
                                 && val[3] != string.Empty | Entrée != 0
                                 && val[4] != string.Empty | Sortie != 0)
                             {
-                                bool CompteCede = cpts.Any(c => c.gestionnaire == Entrée);
-
-                                if (CompteCede) //si le gestionnaire du compte a cedé existe
+                                foreach(Comptes c in cpts)
                                 {
-                                    Comptes.Cession(cpts, NumCpt, Sortie); 
-                                }
+                                    bool GestionnaireExiste = c.gestionnaire.Any(kvp => kvp.Key == Entrée);
+                                    if (GestionnaireExiste) //si le gestionnaire du compte a cedé existe
+                                    {
+                                        Comptes.Cession(cpts, NumCpt, Date, Sortie);
+                                        break;
+                                    }
+                                } 
                             }                         
                         }                     
                         ligne = sr.ReadLine();                   
@@ -107,13 +111,13 @@ namespace Projet_II
             compte.Date = Date;
             compte.solde = Solde;
             compte.entrée = Entrée;
-            compte.gestionnaire = Entrée;
+            compte.gestionnaire.Add(new KeyValuePair<int,DateTime>(Entrée,Date)); 
         }
         //changement de gestionnaire dans la liste de comptes actifs
-        public static void Cession(List<Comptes> cpts, int NumCpt, int Sortie)
+        public static void Cession(List<Comptes> cpts, int NumCpt, DateTime Date, int Sortie)
         {
             Comptes CompteEchange = cpts.Find(c => c.num == NumCpt);
-            CompteEchange.gestionnaire = Sortie;
+            CompteEchange.gestionnaire.Add(new KeyValuePair<int,DateTime>(Sortie,Date));
         }
     }
 
@@ -139,7 +143,7 @@ namespace Projet_II
             CompteClot.entrée = CompteCloture.entrée;
             CompteClot.historique = CompteCloture.historique;
             CompteClot.sortie = Sortie;
-            CompteClot.gestionnaire = Sortie;
+            CompteClot.gestionnaire.Add(new KeyValuePair<int, DateTime>(Sortie,Date));
             CompteClot.DateClot = Date;
         }
     }

@@ -103,7 +103,7 @@ namespace Projet_II
         {
             if (VerifSolde(montant,CExp))
             {
-                if (GExp.typeGest == "Particulier" && GExp.numGest != GDes.numGest)
+                if (GExp.typeGest == "Particulier")
                 {
                     decimal fraisP = (decimal)0.01 * montant;
                     CExp.solde -= montant - fraisP;
@@ -114,7 +114,7 @@ namespace Projet_II
                     Transactions.totMontant += montant;
                     return true;
                 }
-                else if (GExp.typeGest == "Entreprise" && GExp.numGest != GDes.numGest)
+                else if (GExp.typeGest == "Entreprise")
                 {
                     decimal fraisF = 10;
                     CExp.solde -= montant - fraisF;
@@ -146,15 +146,35 @@ namespace Projet_II
                 {
                     compte.historique.Add(montant);
                     somme = compte.historique.Sum();
-                    if (somme <= 1000) return false;
+                    if (somme < 1000) return false;
                     else return true;
                 }
-                else if (compte.historique.Count == NbTransac && NbTransac != 0)
+                if (compte.historique.Count == NbTransac && NbTransac != 0 && NbTransac != 1)
                 {
                     compte.historique.RemoveAt(0);
                     compte.historique.Add(montant);
                     somme = compte.historique.Sum();
-                    if (somme <= 1000) return false;
+                    if (somme < 1000) return false;
+                    else return true;
+                }
+                if (compte.historique.Count == NbTransac && NbTransac == 1)
+                {
+                    compte.historique.Add(montant);
+                    somme = compte.historique.Sum();
+                    if (somme < 1000)
+                    {
+                        compte.historique.RemoveAt(0);
+                        return false;
+                    }
+                    else
+                    {
+                        compte.historique.RemoveAt(0);
+                        return true;
+                    }
+                }
+                if (NbTransac == 0)
+                {
+                    if (montant < 1000) return false;
                     else return true;
                 }
                 else return true;
@@ -186,18 +206,23 @@ namespace Projet_II
                     {
                         Comptes CExp = cpts.Find(e => e.num == exp);
                         Comptes CDest = cpts.Find(d => d.num == des);
-                        int numGExp = CExp.gestionnaire;
-                        int numGDes = CDest.gestionnaire;
-                        Gestionnaires GExp = listeGestionnaires.Find(expe => expe.numGest == numGExp);
-                        Gestionnaires GDest = listeGestionnaires.Find(dest => dest.numGest == numGDes);
-
-                        //si solde suffisant et plafond non atteint
-                        if (exp != des && !Transactions.VerifMaximum(mtn, CExp, GExp))
+                        try
                         {
-                            Transactions.Virement(idt,mtn, CExp, GExp, CDest, GDest, statuts);                                         
-                            continue;
+                            int numGExp = CExp.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                            int numGDes = CDest.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                            Gestionnaires GExp = listeGestionnaires.Find(expe => expe.numGest == numGExp);
+                            Gestionnaires GDest = listeGestionnaires.Find(dest => dest.numGest == numGDes);
+                            //si solde suffisant et plafond non atteint
+                            if (exp != des && !Transactions.VerifMaximum(mtn, CExp, GExp))
+                            {
+                                Transactions.Virement(idt, mtn, CExp, GExp, CDest, GDest, statuts);
+                                continue;
+                            }
                         }
-                        
+                        catch(InvalidOperationException)
+                        {
+                            //*
+                        }                     
                     }
 
                     //au moins un des deux comptes a été fermé
@@ -211,21 +236,28 @@ namespace Projet_II
                         {
                             Comptes CExp = cpts.Find(e => e.num == exp);
                             ComptesClots CCDest = cpClot.Find(d => d.num == des);
-                            int numGExp = CExp.gestionnaire;
-                            int numGDes = CCDest.gestionnaire;
-                            Gestionnaires GExp = listeGestionnaires.Find(ex => ex.numGest == numGExp);
-                            Gestionnaires GCDest = listeGestionnaires.Find(de => de.numGest == numGDes);
-                            DateTime dtClotDest = CCDest.DateClot;
-                            DateTime dtOuvExp = CExp.Date;
-
-                            //si solde siffusant, plafond non atteint et si la transaction a eu lieu avant la cloture
-                            if (exp != des
-                                && !Transactions.VerifMaximum(mtn, CExp, GExp)
-                                && dtOuvExp <= dateEffet
-                                && dtClotDest > dateEffet)
+                            try
                             {
-                                Transactions.Virement(idt, mtn, CExp, GExp, CCDest, GCDest, statuts);
-                                continue;
+                                int numGExp = CExp.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                                int numGDes = CCDest.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                                Gestionnaires GExp = listeGestionnaires.Find(ex => ex.numGest == numGExp);
+                                Gestionnaires GCDest = listeGestionnaires.Find(de => de.numGest == numGDes);
+                                DateTime dtClotDest = CCDest.DateClot;
+                                DateTime dtOuvExp = CExp.Date;
+
+                                //si solde siffusant, plafond non atteint et si la transaction a eu lieu avant la cloture
+                                if (exp != des
+                                    && !Transactions.VerifMaximum(mtn, CExp, GExp)
+                                    && dtOuvExp <= dateEffet
+                                    && dtClotDest > dateEffet)
+                                {
+                                    Transactions.Virement(idt, mtn, CExp, GExp, CCDest, GCDest, statuts);
+                                    continue;
+                                }
+                            }
+                            catch(InvalidOperationException)
+                            {
+                                //*
                             }
                         }
 
@@ -234,21 +266,28 @@ namespace Projet_II
                         {
                             ComptesClots CCExp = cpClot.Find(e => e.num == exp);
                             Comptes CDest = cpts.Find(d => d.num == des);
-                            int numGExp = CCExp.gestionnaire;
-                            int numGDes = CDest.gestionnaire;
-                            Gestionnaires GCExp = listeGestionnaires.Find(exped => exped.numGest == numGExp);
-                            Gestionnaires GDest = listeGestionnaires.Find(desti => desti.numGest == numGDes);
-                            DateTime dtOuvDest = CDest.Date;
-                            DateTime dtClotDest = CCExp.DateClot;
-
-                            //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la cloture
-                            if (exp != des
-                                && !Transactions.VerifMaximum(mtn, CCExp, GCExp)
-                                && dtOuvDest <= dateEffet
-                                && dtClotDest > dateEffet)
+                            try
                             {
-                                Transactions.Virement(idt, mtn, CCExp, GCExp, CDest, GDest, statuts);
-                                continue;
+                                int numGExp = CCExp.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                                int numGDes = CDest.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                                Gestionnaires GCExp = listeGestionnaires.Find(exped => exped.numGest == numGExp);
+                                Gestionnaires GDest = listeGestionnaires.Find(desti => desti.numGest == numGDes);
+                                DateTime dtOuvDest = CDest.Date;
+                                DateTime dtClotDest = CCExp.DateClot;
+
+                                //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la cloture
+                                if (exp != des
+                                    && !Transactions.VerifMaximum(mtn, CCExp, GCExp)
+                                    && dtOuvDest <= dateEffet
+                                    && dtClotDest > dateEffet)
+                                {
+                                    Transactions.Virement(idt, mtn, CCExp, GCExp, CDest, GDest, statuts);
+                                    continue;
+                                }
+                            }
+                            catch(InvalidOperationException)
+                            {
+                                //*
                             }
                         }
 
@@ -257,26 +296,34 @@ namespace Projet_II
                         {
                             ComptesClots CCExp = cpClot.Find(e => e.num == exp);
                             ComptesClots CCDest = cpClot.Find(d => d.num == des);
-                            int numGExp = CCExp.gestionnaire;
-                            int numGDes = CCDest.gestionnaire;
-                            Gestionnaires GCExp = listeGestionnaires.Find(exped => exped.numGest == numGExp);
-                            Gestionnaires GCDest = listeGestionnaires.Find(desti => desti.numGest == numGDes);
-                            DateTime dtOuvExp = CCExp.Date;
-                            DateTime dtClotExp = CCExp.DateClot;
-                            DateTime dtOuvDest = CCDest.Date;
-                            DateTime dtClotDest = CCDest.DateClot;
-
-                            //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la cloture
-                            if (exp != des
+                            try
+                            {
+                                int numGExp = CCExp.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                                int numGDes = CCDest.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;                          
+                                Gestionnaires GCExp = listeGestionnaires.Find(exped => exped.numGest == numGExp);
+                                Gestionnaires GCDest = listeGestionnaires.Find(desti => desti.numGest == numGDes);
+                                DateTime dtOuvExp = CCExp.Date;
+                                DateTime dtClotExp = CCExp.DateClot;
+                                DateTime dtOuvDest = CCDest.Date;
+                                DateTime dtClotDest = CCDest.DateClot;
+                                if (exp != des
                                 && !Transactions.VerifMaximum(mtn, CCExp, GCExp)
                                 && dtOuvExp <= dateEffet
                                 && dtClotExp > dateEffet
                                 && dtOuvDest <= dateEffet
                                 && dtClotDest > dateEffet)
-                            {
-                                Transactions.Virement(idt, mtn, CCExp, GCExp, CCDest, GCDest, statuts);
-                                continue;
+                                {
+                                    Transactions.Virement(idt, mtn, CCExp, GCExp, CCDest, GCDest, statuts);
+                                    continue;
+                                }
                             }
+                            catch(InvalidOperationException)
+                            {
+                                //*
+                            }
+
+                            //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la cloture
+                            
                         }
                     }
                 }
@@ -305,14 +352,21 @@ namespace Projet_II
                             ComptesClots CCDes = cpClot.Find(e => e.num == des);
                             DateTime DateCloture = CCDes.DateClot;
                             DateTime DateCreation = CCDes.Date;
-                            int numGestionnaire = CCDes.gestionnaire;
-                            Gestionnaires gest = listeGestionnaires.Find(g => g.numGest == numGestionnaire);
-
-                            //si la transaction a eu lieu avant la cloture
-                            if (DateCloture > dateEffet && dateEffet >= DateCreation)
+                            try
                             {
-                                Transactions.Dépot(idt, mtn, CCDes, statuts);
-                                continue;
+                                int numGestionnaire = CCDes.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                                Gestionnaires gest = listeGestionnaires.Find(g => g.numGest == numGestionnaire);
+
+                                //si la transaction a eu lieu avant la cloture
+                                if (DateCloture > dateEffet && dateEffet >= DateCreation)
+                                {
+                                    Transactions.Dépot(idt, mtn, CCDes, statuts);
+                                    continue;
+                                }
+                            }
+                            catch(InvalidOperationException)
+                            {
+                                //*
                             }
                         }
                     }
@@ -327,16 +381,23 @@ namespace Projet_II
                     if (CompteExped)
                     {
                         Comptes CExp = cpts.Find(e => e.num == exp);
-                        int numGestionnaire = CExp.gestionnaire;
-                        Gestionnaires gest = listeGestionnaires.Find(g => g.numGest == numGestionnaire);
-                        DateTime DateCreation = CExp.Date;
-
-                        //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la création du compte
-                        if (!Transactions.VerifMaximum(mtn, CExp, gest)
-                            && DateCreation <= dateEffet)
+                        try
                         {
-                            Transactions.Retrait(idt, mtn, CExp, statuts);
-                            continue;
+                            int numGestionnaire = CExp.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                            Gestionnaires gest = listeGestionnaires.Find(g => g.numGest == numGestionnaire);
+                            DateTime DateCreation = CExp.Date;
+
+                            //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la création du compte
+                            if (!Transactions.VerifMaximum(mtn, CExp, gest)
+                                && DateCreation <= dateEffet)
+                            {
+                                Transactions.Retrait(idt, mtn, CExp, statuts);
+                                continue;
+                            }
+                        }
+                        catch
+                        {
+                            //*
                         }
                     }
 
@@ -353,16 +414,23 @@ namespace Projet_II
                             ComptesClots CCExp = cpClot.Find(e => e.num == exp);
                             DateTime DateCloture = CCExp.DateClot;
                             DateTime DateCreation = CCExp.Date;
-                            int numGestionnaire = CCExp.gestionnaire;
-                            Gestionnaires gest = listeGestionnaires.Find(g => g.numGest == numGestionnaire);
-
-                            //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la cloture du compte
-                            if (!Transactions.VerifMaximum(mtn, CCExp, gest)
-                                && DateCloture > dateEffet
-                                && dateEffet >= DateCreation)
+                            try
                             {
-                                Transactions.Retrait(idt, mtn, CCExp, statuts);
-                                continue;
+                                int numGestionnaire = CCExp.gestionnaire.Last(kvp => kvp.Value <= dateEffet).Key;
+                                Gestionnaires gest = listeGestionnaires.Find(g => g.numGest == numGestionnaire);
+
+                                //si solde suffisant, plafond non atteint et si la transaction a eu lieu avant la cloture du compte
+                                if (!Transactions.VerifMaximum(mtn, CCExp, gest)
+                                    && DateCloture > dateEffet
+                                    && dateEffet >= DateCreation)
+                                {
+                                    Transactions.Retrait(idt, mtn, CCExp, statuts);
+                                    continue;
+                                }
+                            }
+                            catch
+                            {
+                                //*
                             }
                         }
                     }

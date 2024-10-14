@@ -38,18 +38,6 @@ namespace Projet_II
             Dictionary<int,string> statuts = new Dictionary<int,string>();
             Transactions.Traitement(statuts, ListeTransactions, cpts, cpClot, listeGestionnaires);          
 
-            //calcul du montant total des transactions réussies
-           
-           // decimal totMontant = 0;
-           // foreach (Transactions Transac in ListeTransactions)
-           // {
-           //     if (statuts[RangTransac] == "OK")
-           //     {          
-           //        totMontant += Transac.montant;
-           //     }
-           //    RangTransac += 1;
-           // }
-
             //écriture des statuts de transactions
             using (StreamWriter sw = new StreamWriter(fstatuts))
             {

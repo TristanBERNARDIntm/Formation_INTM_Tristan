@@ -83,6 +83,7 @@ namespace Projet_III
 		{
             bool entierNum = uint.TryParse(val[0], out uint NumCpt);
 			bool charType = char.TryParse(val[1], out char type);
+			if (val[1] == string.Empty) type = 'C';
             bool dateDate = DateTime.TryParse(val[2], out DateTime Date);
             string val3 = val[3].Replace(".", ",");
             bool decimalSolde = decimal.TryParse(val3, out decimal Solde);
@@ -91,10 +92,9 @@ namespace Projet_III
             bool entierSortie = uint.TryParse(val[6], out uint Sortie);
 
 			if (val.Length == 7
-				&& entierNum
-				&& charType 
-				&& type == 'C' | type == 'J'| type == 'L'| type == 'T'| val[1] == string.Empty
-				&& dateDate | val[2] == string.Empty
+				&& entierNum 
+                && type == 'C' | type == 'J'| type == 'L'| type == 'T' 
+                && dateDate | val[2] == string.Empty
 				&& decimalSolde | val[3] == string.Empty
 				&& entierAge & Age >= 8 | val[4] == string.Empty
 				&& entierEntrée | val[5] == string.Empty

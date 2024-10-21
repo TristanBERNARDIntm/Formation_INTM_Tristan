@@ -87,15 +87,14 @@ namespace Projet_III
 
         public static bool Retrait(uint idt, decimal montant, DateTime Date, Comptes CExp, Dictionary<uint, string> statuts)
         {
-            if (VerifSolde(montant, CExp, Date))
+            if (VerifSolde(montant, CExp, Date) && CExp.type != 'L' && CExp.type != 'T')
             {
-                if (CExp.type == 'J' && montant > CExp.age / 18 ||CExp.type == 'L')
+                if (CExp.type == 'J' && montant > CExp.age / 18 || CExp.type == 'L')
                 {
                     statuts.Add(idt, "KO");
                     Transactions.NbTransKO++;
                     return false;
                 }
-
                 CExp.solde.Add(Date, -montant);
                 statuts.Add(idt, "OK");
                 Transactions.totMontant += montant;
@@ -109,7 +108,7 @@ namespace Projet_III
 
         public static bool Virement(uint idt, decimal montant, DateTime DateTransac, Comptes CExp, Gestionnaires GExp, Comptes CDes, Gestionnaires GDes, Dictionary<uint, string> statuts)
         {
-            if (VerifSolde(montant,CExp,DateTransac))
+            if (VerifSolde(montant,CExp,DateTransac) && CExp.type != 'T')
             {
                 if (GExp.typeGest == "Particulier")
                 {
@@ -142,7 +141,11 @@ namespace Projet_III
 
         public static bool VerifSolde(decimal montant, Comptes CExp, DateTime dateEffet)
         {
-            return CExp.solde.Where(y => y.Key < dateEffet).Sum(x => x.Value) > montant;
+            if (CExp.solde.Where(y => y.Key < dateEffet).Sum(x => x.Value) >= montant)
+            {
+                return true;
+            }
+            return false;
         }
     
         public static bool VerifMaximum(decimal montant, Comptes compte, Gestionnaires gest)
@@ -155,7 +158,7 @@ namespace Projet_III
                 {
                     compte.historique.Add(montant);
                     somme = compte.historique.Sum();
-                    if (somme < 1000) return false;
+                    if (somme <= 1000) return false;
                     else return true;
                 }
                 if (compte.historique.Count == NbTransac && NbTransac != 0 && NbTransac != 1)
@@ -163,14 +166,14 @@ namespace Projet_III
                     compte.historique.RemoveAt(0);
                     compte.historique.Add(montant);
                     somme = compte.historique.Sum();
-                    if (somme < 1000) return false;
+                    if (somme <= 1000) return false;
                     else return true;
                 }
                 if (compte.historique.Count == NbTransac && NbTransac == 1)
                 {
                     compte.historique.Add(montant);
                     somme = compte.historique.Sum();
-                    if (somme < 1000)
+                    if (somme <= 1000)
                     {
                         compte.historique.RemoveAt(0);
                         return false;
@@ -183,7 +186,7 @@ namespace Projet_III
                 }
                 if (NbTransac == 0)
                 {
-                    if (montant < 1000) return false;
+                    if (montant <= 1000) return false;
                     else return true;
                 }
                 else return true;

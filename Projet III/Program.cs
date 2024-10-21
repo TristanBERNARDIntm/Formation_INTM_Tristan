@@ -70,11 +70,17 @@ namespace Projet_III
                 sw.WriteLine($"Intérêts :");
                 foreach (Comptes compte in cpts)
                 {
-                    sw.WriteLine($"{compte.num} : {compte.interets} euros");
+                    if (compte.interets != 0)
+                    {
+                        sw.WriteLine($"{compte.num} : {compte.interets} euros");
+                    }
                 }
                 foreach (ComptesClots compteClot in cpClot)
                 {
-                    sw.WriteLine($"{compteClot.num} : {compteClot.interets} euros");
+                    if (compteClot.interets != 0)
+                    {
+                        sw.WriteLine($"{compteClot.num} : {compteClot.interets} euros");
+                    }
                 }
             }    
         }

@@ -22,7 +22,6 @@ namespace Projet_III
         public List<decimal> historique { get; set; }
         public decimal interets { get; set; }
         public static uint NbComptes { get; set; }
-        private decimal taux {  get; set; }
 
         public Comptes()
         {
@@ -36,8 +35,6 @@ namespace Projet_III
             historique = new List<decimal>();
             interets = 0;
             NbComptes++;
-            if (type == 'L') taux = 0.0017m;
-            if (type == 'T') taux = 0.0042m;
         }
         //recup des variables du fichier Comptes dans une liste 
         public static void LectureComptes(string fcomptes, List<Comptes> cpts, List<ComptesClots> cpClot, List<Gestionnaires> listeGestionnaires)
@@ -141,11 +138,12 @@ namespace Projet_III
         public static void CalculInterets(List<Comptes> cpts, List<ComptesClots> cpClot)
         {
             DateTime DateToday = DateTime.Today;
+            int jourNow = DateToday.Day;
+            decimal taux = 0;
             foreach (Comptes compte in cpts)
             {
-                int anneeNow = DateToday.Year;
-                int moisNow = DateToday.Month;
-                int jourNow = DateToday.Day;
+                if (compte.type == 'L') taux = 0.0017m;
+                if (compte.type == 'T') taux = 0.0042m;
                 int anneeCrea = compte.Date.Year;
                 int moisCrea = compte.Date.Month;
                 int jourCrea = compte.Date.Day;
@@ -156,60 +154,61 @@ namespace Projet_III
                     if (jourCrea != 1)
                     {
                         int nbjourmois = DateTime.DaysInMonth(anneeCrea, moisCrea);
-                        int prorata = (nbjourmois - jourCrea + 1 ) / nbjourmois;
-                        decimal soldeActuel = compte.solde.Where(k => k.Key < DT).Sum(x => x.Value);
-                        compte.interets += soldeActuel * compte.taux * (decimal)prorata;
+                        decimal prorata = ((decimal)nbjourmois - (decimal)jourCrea + (decimal)1 ) / (decimal)nbjourmois;
                         DT = new DateTime(anneeCrea, moisCrea, 1);
-                        DT = DT.AddMonths(2);
+                        DT = DT.AddMonths(1);
+                        decimal soldeActuel = compte.solde.Where(k => k.Key < DT).Sum(x => x.Value);
+                        compte.interets += soldeActuel * taux * prorata;      
                     }
                     while (DT <= DateToday)
                     {
                         decimal solde = compte.solde.Where(k => k.Key < DT).Sum(v => v.Value);
-                        compte.interets += solde * compte.taux;
-                        DT = DT.AddMonths(2);
+                        compte.interets += solde * taux;
+                        DT = DT.AddMonths(1);
                     }
                     if (jourNow != 1)
                     {
                         int nbjourmois = DateTime.DaysInMonth(anneeCrea, moisCrea);
-                        int prorata = jourNow / nbjourmois;
+                        decimal prorata = (decimal)jourNow / (decimal)nbjourmois;
                         decimal soldeActuel = compte.solde.Where(k => k.Key < DateToday).Sum(x => x.Value);
-                        compte.interets += soldeActuel * compte.taux * (decimal)prorata;
+                        compte.interets += soldeActuel * taux * prorata;
                     }
                 }
             }
             foreach (ComptesClots cp in cpClot)
             {
-                int anneeNow = DateToday.Year;
-                int moisNow = DateToday.Month;
-                int jourNow = DateToday.Day;
                 int anneeCrea = cp.Date.Year;
                 int moisCrea = cp.Date.Month;
                 int jourCrea = cp.Date.Day;
+                int anneeClot = cp.DateClot.Year;
+                int moisClot = cp.DateClot.Month;
+                int jourClot = cp.DateClot.Day;
                 DateTime DT = cp.Date;
+                DateTime DateClot = cp.DateClot;
 
                 if (cp.type == 'L' || cp.type == 'T')
                 {
                     if (jourCrea != 1)
                     {
                         int nbjourmois = DateTime.DaysInMonth(anneeCrea, moisCrea);
-                        int prorata = (nbjourmois - jourCrea + 1) / nbjourmois;
-                        decimal soldeActuel = cp.solde.Where(k => k.Key < DT).Sum(x => x.Value);
-                        cp.interets += soldeActuel * cp.taux * (decimal)prorata;
+                        decimal prorata = ((decimal)nbjourmois - (decimal)jourCrea + 1) / (decimal)nbjourmois;
                         DT = new DateTime(anneeCrea, moisCrea, 1);
                         DT = DT.AddMonths(1);
+                        decimal soldeActuel = cp.solde.Where(k => k.Key < DT).Sum(x => x.Value);
+                        cp.interets += soldeActuel * taux * prorata;   
                     }
-                    while (DT <= DateToday)
+                    while (DT <= DateClot)
                     {
                         decimal solde = cp.solde.Where(k => k.Key < DT).Sum(v => v.Value);
-                        cp.interets += solde * cp.taux;
+                        cp.interets += solde * taux;
                         DT = DT.AddMonths(1);
                     }
                     if (jourNow != 1)
                     {
                         int nbjourmois = DateTime.DaysInMonth(anneeCrea, moisCrea);
-                        int prorata = jourNow / nbjourmois;
-                        decimal soldeActuel = cp.solde.Where(k => k.Key < DateToday).Sum(x => x.Value);
-                        cp.interets += soldeActuel * cp.taux * (decimal)prorata;
+                        decimal prorata = (decimal)jourClot / (decimal)nbjourmois;
+                        decimal soldeActuel = cp.solde.Where(k => k.Key < DateClot).Sum(x => x.Value);
+                        cp.interets += soldeActuel * taux * prorata;
                     }
                 }
             }

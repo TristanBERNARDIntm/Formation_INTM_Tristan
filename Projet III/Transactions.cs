@@ -108,31 +108,22 @@ namespace Projet_III
 
         public static bool Virement(uint idt, decimal montant, DateTime DateTransac, Comptes CExp, Gestionnaires GExp, Comptes CDes, Gestionnaires GDes, Dictionary<uint, string> statuts)
         {
-            if (VerifSolde(montant,CExp,DateTransac) && CExp.type != 'T')
+            if (VerifSolde(montant, CExp, DateTransac) && CExp.type != 'T')
             {
-                if (GExp.typeGest == "Particulier")
+                if (GExp.numGest != GDes.numGest)
                 {
-                    decimal fraisP = (decimal)0.01 * montant;
-                    decimal mtn = -montant - fraisP;
-                    CExp.solde.Add(DateTransac,mtn);
-                    GExp.FraisGest.Add(fraisP);
-                    statuts.Add(idt, "OK");
-                    Transactions.NbTransOK++;
-                    Transactions.totMontant += montant;
-                    return true;
-                }
-                else if (GExp.typeGest == "Entreprise")
-                {
-                    decimal fraisF = 10;
-                    decimal mtn = - montant - fraisF;
+                    decimal frais = 0;
+                    if (GExp.typeGest == "Particulier") frais = 0.01m * montant;
+                    else if (GExp.typeGest == "Entreprise") frais = 10m;
+                    decimal mtn = -montant - frais;
                     CExp.solde.Add(DateTransac, mtn);
-                    CDes.solde.Add(DateTransac, montant);
-                    GExp.FraisGest.Add(fraisF);
-                    statuts.Add(idt, "OK");
-                    Transactions.NbTransOK++;
-                    Transactions.totMontant += montant;
-                    return true;
+                    GExp.FraisGest.Add(frais);
                 }
+                CDes.solde.Add(DateTransac, montant);
+                statuts.Add(idt, "OK");
+                Transactions.NbTransOK++;
+                Transactions.totMontant += montant;
+                return true;
             }
             statuts.Add(idt, "KO");
             Transactions.NbTransKO++;

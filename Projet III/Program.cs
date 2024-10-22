@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -13,6 +14,7 @@ namespace Projet_III
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
             //chemin d'accès fichiers
             string fcomptes = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Comptes.txt";
             string ftransactions = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Transactions.txt";
@@ -58,28 +60,32 @@ namespace Projet_III
                 sw.WriteLine($"Nombre de transactions : {Transactions.NombreTrans}");
                 sw.WriteLine($"Nombre de réussites : {Transactions.NbTransOK}");
                 sw.WriteLine($"Nombre d'échecs : {Transactions.NbTransKO}");
-                sw.WriteLine($"Montant total des réussites : {Transactions.totMontant} euros");
+                sw.WriteLine($"Montant total des réussites : {Transactions.totMontant:C}");
                 sw.WriteLine();
                 sw.WriteLine($"Frais de gestions :");
                 foreach(Gestionnaires gestionnaire in listeGestionnaires)
                 {
                     decimal totalfrais = gestionnaire.FraisGest.Sum();
-                    sw.WriteLine($"{gestionnaire.numGest} : {totalfrais} euros");
+                    sw.WriteLine($"{gestionnaire.numGest} : {totalfrais:C}");
                 }
                 sw.WriteLine();
                 sw.WriteLine($"Intérêts :");
+                sw.WriteLine();
+                sw.WriteLine($"Comptes actifs :");
                 foreach (Comptes compte in cpts)
                 {
                     if (compte.interets != 0)
                     {
-                        sw.WriteLine($"{compte.num} : {compte.interets} euros");
+                        sw.WriteLine($"{compte.num} : {compte.interets:C}");
                     }
                 }
+                sw.WriteLine();
+                sw.WriteLine($"Comptes cloturés :");
                 foreach (ComptesClots compteClot in cpClot)
                 {
                     if (compteClot.interets != 0)
                     {
-                        sw.WriteLine($"{compteClot.num} : {compteClot.interets} euros");
+                        sw.WriteLine($"{compteClot.num} : {compteClot.interets:C}");
                     }
                 }
             }    

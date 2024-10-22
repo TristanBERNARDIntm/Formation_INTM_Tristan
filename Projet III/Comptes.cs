@@ -126,7 +126,6 @@ namespace Projet_III
             compte.entrée = Entrée;
             compte.gestionnaire.Add(new KeyValuePair<uint,DateTime>(Entrée,Date));
             Tools.VerifAge(compte, Type, Date, Age);
-
         }
         //changement de gestionnaire dans la liste de comptes actifs
         public static void Cession(List<Comptes> cpts, uint NumCpt, DateTime Date, uint Sortie)
@@ -155,10 +154,10 @@ namespace Projet_III
                     {
                         int nbjourmois = DateTime.DaysInMonth(anneeCrea, moisCrea);
                         decimal prorata = ((decimal)nbjourmois - (decimal)jourCrea + (decimal)1 ) / (decimal)nbjourmois;
-                        DT = new DateTime(anneeCrea, moisCrea, 1);
-                        DT = DT.AddMonths(1);
+                        DT = new DateTime(anneeCrea, moisCrea, nbjourmois);
                         decimal soldeActuel = compte.solde.Where(k => k.Key < DT).Sum(x => x.Value);
-                        compte.interets += soldeActuel * taux * prorata;      
+                        compte.interets += soldeActuel * taux * prorata;
+                        DT = DT.AddMonths(1);
                     }
                     while (DT <= DateToday)
                     {
@@ -185,6 +184,8 @@ namespace Projet_III
                 int jourClot = cp.DateClot.Day;
                 DateTime DT = cp.Date;
                 DateTime DateClot = cp.DateClot;
+                if (cp.type == 'L') taux = 0.0017m;
+                if (cp.type == 'T') taux = 0.0042m;
 
                 if (cp.type == 'L' || cp.type == 'T')
                 {
@@ -192,10 +193,10 @@ namespace Projet_III
                     {
                         int nbjourmois = DateTime.DaysInMonth(anneeCrea, moisCrea);
                         decimal prorata = ((decimal)nbjourmois - (decimal)jourCrea + 1) / (decimal)nbjourmois;
-                        DT = new DateTime(anneeCrea, moisCrea, 1);
-                        DT = DT.AddMonths(1);
+                        DT = new DateTime(anneeCrea, moisCrea, nbjourmois);
                         decimal soldeActuel = cp.solde.Where(k => k.Key < DT).Sum(x => x.Value);
-                        cp.interets += soldeActuel * taux * prorata;   
+                        cp.interets += soldeActuel * taux * prorata;
+                        DT = DT.AddMonths(1);
                     }
                     while (DT <= DateClot)
                     {
@@ -234,15 +235,13 @@ namespace Projet_III
             CompteClot.num = CompteCloture.num;
             CompteClot.type = CompteCloture.type;
             CompteClot.Date = CompteCloture.Date;
-            CompteClot.solde.Add(Date, Solde);
+            CompteClot.solde = CompteCloture.solde;
             CompteClot.age = CompteCloture.age;
             CompteClot.entrée = CompteCloture.entrée;
             CompteClot.historique = CompteCloture.historique;
             CompteClot.sortie = Sortie;
-            CompteClot.gestionnaire.Add(new KeyValuePair<uint, DateTime>(Sortie,Date));
+            CompteClot.gestionnaire = CompteCloture.gestionnaire;
             CompteClot.DateClot = Date;
         }
     }
-
-
 }

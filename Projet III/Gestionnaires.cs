@@ -23,6 +23,7 @@ namespace Projet_III
 			FraisGest = new List<decimal>();
         }
 
+        //récupération des informations du fichier gestionnaire dans une liste de gestionnaires
 		public static void LectureGestionnaire(string fgest, List<Gestionnaires> listeGestionnaires)
 		{
             using (StreamReader sr = new StreamReader(fgest))

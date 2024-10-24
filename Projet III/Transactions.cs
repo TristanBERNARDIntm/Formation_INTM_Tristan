@@ -29,6 +29,7 @@ namespace Projet_III
             destinataire = 0;
             NombreTrans++;
         }     
+
         //récupération des variables du fichier Transactions dans une liste de Transactions
         public static void LectureTransactions(string ftransactions, List<Transactions> ListeTransactions)
         {
@@ -77,6 +78,7 @@ namespace Projet_III
             }
         }
 
+        //réaliser un dépot d'argent sur un compte
         public static void Dépot(uint idt, decimal montant, DateTime DateTrans, Comptes CDes, Dictionary<uint, string> statuts)
         {
             CDes.solde.Add(DateTrans,montant);
@@ -85,6 +87,7 @@ namespace Projet_III
             Transactions.NbTransOK++;
         }
 
+        //réaliser un retrait d'argent sur un compte courant (pas les comptes épargnes type livret ou à termes)
         public static bool Retrait(uint idt, decimal montant, DateTime Date, Comptes CExp, Dictionary<uint, string> statuts)
         {
             if (VerifSolde(montant, CExp, Date) && CExp.type != 'L' && CExp.type != 'T')
@@ -106,6 +109,7 @@ namespace Projet_III
             return false;
         }
 
+        //réaliser le virement entre un compte expéditeur et un compte destinataire (hors compte à termes)
         public static bool Virement(uint idt, decimal montant, DateTime DateTransac, Comptes CExp, Gestionnaires GExp, Comptes CDes, Gestionnaires GDes, Dictionary<uint, string> statuts)
         {
             if (VerifSolde(montant, CExp, DateTransac) && CExp.type != 'T')
@@ -115,10 +119,11 @@ namespace Projet_III
                     decimal frais = 0;
                     if (GExp.typeGest == "Particulier") frais = 0.01m * montant;
                     else if (GExp.typeGest == "Entreprise") frais = 10m;
-                    decimal mtn = -montant - frais;
+                    decimal mtn = - montant - frais;
                     CExp.solde.Add(DateTransac, mtn);
                     GExp.FraisGest.Add(frais);
                 }
+                if (GExp.numGest == GDes.numGest) CExp.solde.Add(DateTransac, -montant);
                 CDes.solde.Add(DateTransac, montant);
                 statuts.Add(idt, "OK");
                 Transactions.NbTransOK++;
@@ -130,6 +135,7 @@ namespace Projet_III
             return false;
         }
 
+        //vérifier que le solde du compte est suffisant pour permettre l'opération
         public static bool VerifSolde(decimal montant, Comptes CExp, DateTime dateEffet)
         {
             if (CExp.solde.Where(y => y.Key < dateEffet).Sum(x => x.Value) >= montant)
@@ -139,6 +145,7 @@ namespace Projet_III
             return false;
         }
     
+        //vérifier que le montant maximum des opérations n'a pas été dépassé
         public static bool VerifMaximum(decimal montant, Comptes compte, Gestionnaires gest)
         {
             try
@@ -154,9 +161,9 @@ namespace Projet_III
                 }
                 if (compte.historique.Count == NbTransac && NbTransac != 0 && NbTransac != 1)
                 {
-                    compte.historique.RemoveAt(0);
                     compte.historique.Add(montant);
                     somme = compte.historique.Sum();
+                    compte.historique.RemoveAt(0);
                     if (somme <= 1000) return false;
                     else return true;
                 }
@@ -188,6 +195,7 @@ namespace Projet_III
             }
         }
 
+        //traitement des opérations de transactions de façon non séquentielle
         public static void Traitement(Dictionary<uint,string> statuts, List<Transactions> ListeTransactions, List<Comptes> cpts, List<ComptesClots> cpClot, List<Gestionnaires> listeGestionnaires)
         {
             foreach (Transactions transac in ListeTransactions)
@@ -337,8 +345,11 @@ namespace Projet_III
                     if (CompteDesti)
                     {
                         Comptes CDest = cpts.Find(d => d.num == des);
-                        Transactions.Dépot(idt, mtn, dateEffet, CDest, statuts);
-                        continue;
+                        if (dateEffet >= CDest.Date)
+                        { 
+                            Transactions.Dépot(idt, mtn, dateEffet, CDest, statuts);
+                            continue;
+                        } 
                     }
 
                     //si des comptes ont été supprimés

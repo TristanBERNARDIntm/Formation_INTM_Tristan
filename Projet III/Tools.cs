@@ -42,6 +42,7 @@ namespace Projet_III
 			}
         }
 
+		//vérifier si l'année est bissextiles
 		public static bool AnneeBissextile(uint année)
 		{
 			if (année % 4 == 0 && année % 100 != 0 || année % 400 == 0)
@@ -51,6 +52,7 @@ namespace Projet_III
 			return false;
 		}
 
+		//vérifier le nombre de jour dans le mois
 		public static bool VerifJourDansMois(uint jour, uint mois, uint année)
 		{
 			if (mois == 1 | mois == 3 | mois == 5 | mois == 7 | mois == 8 | mois == 10 | mois == 12 && jour <= 31) return true;
@@ -78,6 +80,7 @@ namespace Projet_III
 
             return false;
 		}
+
 		//vérification de la conformité des variables du Compte
 		public static bool VerifComptes(string[] val)
 		{
@@ -105,6 +108,7 @@ namespace Projet_III
             }
 			return false;
         }
+
 		//vérification de la conformité des variables de la Transaction
 		public static bool VerifTransaction(string[] val)
 		{
@@ -124,6 +128,7 @@ namespace Projet_III
             return false;
 		}
 
+		//vérification de l'age du client et modification du type de compte en fonction de son age
 		public static void VerifAge(Comptes compte, char Type, DateTime Date, uint Age)
 		{
             TimeSpan TS = DateTime.Now - Date;

@@ -15,12 +15,13 @@ namespace Projet_III
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
+
             //chemin d'accès fichiers
-            string fcomptes = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Comptes.txt";
-            string ftransactions = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Transactions.txt";
-            string fstatuts = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\StatutsTransactions.txt";
-            string fgest = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Gestionnaires.txt"; 
-            string fresult = @"C:\Users\Formation\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Resultats.txt";
+            string fcomptes = @"C:\Users\Formation.FORMATION20\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Comptes.txt";
+            string ftransactions = @"C:\Users\Formation.FORMATION20\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Transactions.txt";
+            string fstatuts = @"C:\Users\Formation.FORMATION20\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\StatutsTransactions.txt";
+            string fgest = @"C:\Users\Formation.FORMATION20\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Gestionnaires.txt"; 
+            string fresult = @"C:\Users\Formation.FORMATION20\source\repos\Formation_INTM_Tristan\Projet III\bin\Debug\Resultats.txt";
 
             // recupération du fichier gestionnaires dans une liste d'objet
             List<Gestionnaires> listeGestionnaires = new List<Gestionnaires>();
@@ -40,7 +41,7 @@ namespace Projet_III
             Dictionary<uint,string> statuts = new Dictionary<uint,string>();
             Transactions.Traitement(statuts, ListeTransactions, cpts, cpClot, listeGestionnaires);
 
-            //Calcul des intérets
+            //Calcul des intérets des comptes courants puis des comptes clots
             Comptes.CalculInterets(cpts, cpClot);
 
             //écriture des statuts de transactions

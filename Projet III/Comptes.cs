@@ -145,8 +145,8 @@ namespace Projet_III
             foreach (Comptes compte in cpts) //calcul des interets pour les comptes courants de leur date d'ouverture à la date d'aujourd'hui
             {
                 if (compte.type == 'L') taux = 0.0017m;
-                DateTime duréeCompte = DateTime.Now - 
-                if (compte.type == 'T' && ) taux = 0.0084m;
+                int ageCompte = DateTime.Now.Year - compte.Date.Year;
+                if (compte.type == 'T' && ageCompte % 5 == 0) taux = 0.0084m;
                 if (compte.type == 'T') taux = 0.0042m;
                 int anneeCrea = compte.Date.Year;
                 int moisCrea = compte.Date.Month;
@@ -190,6 +190,8 @@ namespace Projet_III
                 DateTime DT = cp.Date;
                 DateTime DateClot = cp.DateClot;
                 if (cp.type == 'L') taux = 0.0017m;
+                int ageCompte = cp.DateClot.Year - cp.Date.Year;
+                if (cp.type == 'T' && ageCompte % 5 == 0) taux = 0.0084m;
                 if (cp.type == 'T') taux = 0.0042m;
 
                 if (cp.type == 'L' || cp.type == 'T')

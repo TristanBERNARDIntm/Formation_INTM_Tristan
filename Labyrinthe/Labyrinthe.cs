@@ -12,14 +12,10 @@ namespace Labyrinthe
     public class Labyrinthe
     {
         private readonly Cell[,] _cell;
-        private readonly bool[,,,] _open;
-        private readonly bool _visited;
-        private readonly string _status;
-        private readonly int[,] _taille;
-
-        public Labyrinthe()
+                
+        public Labyrinthe(int n, int m)
         {
-            //jsp
+            _cell = new Cell[n,m];
         }
 
         public bool IsOpen(int i, int j, int w)
@@ -27,13 +23,13 @@ namespace Labyrinthe
             return _cell[i,j].parois[w];
         }
 
-        private bool IsMazeStart(int i, int j)
+        public bool IsMazeStart(int i, int j)
         {
             if (_cell[i,j].statut == "entrée") return true;
             return false;
         }
 
-        private bool IsMazeEnd(int i, int j)
+        public bool IsMazeEnd(int i, int j)
         {
             if (_cell[i,j].statut == "sortie") return true;
             return false;
@@ -41,10 +37,10 @@ namespace Labyrinthe
 
         public void Open(int i, int j, int w)
         {
-            //todo
+            _cell[i,j].parois[w] = true;
         }
 
-        private List<KeyValuePair<int, int>> CloseNeighbors(int i, int j)
+        public List<KeyValuePair<int, int>> CloseNeighbors(int i, int j)
         {
             List<KeyValuePair<int, int>> voisins = new List<KeyValuePair<int, int>>();
             for (int ii = i - 1; ii <= i + 1; ii++) 
@@ -64,9 +60,41 @@ namespace Labyrinthe
             return voisins;
         }
 
-        private void Generate(KeyValuePair<int,int> kvp)
+        public void Generate(KeyValuePair<int,int> kvp)
         {
-            //todo
+            int n = kvp.Key;
+            int m = kvp.Value;
+            RandomCell(n,m);
+            RandomNeigbour(n,m);
+        }
+
+        public void RandomCell(int n, int m)
+        {
+            Random rdm = new Random();
+            int col = rdm.Next(0,n);
+            int lig = rdm.Next(0,m);
+            int par = rdm.Next(0,3);
+            Open(col,lig,par);
+        }
+
+        public void RandomNeigbour(int n, int m)
+        {
+            Random rdm = new Random();
+            List<KeyValuePair<int,int>>voisins = CloseNeighbors(n,m);
+            KeyValuePair<int,int> voisin = rdm.Next(voisins.Count);
+            int nv = voisin.Key;
+            int mv = voisin.Value;
+            if (_cell[nv,mv].visitée == true && voisins.Count != 0)
+            {
+                voisins.Remove(voisin);
+                RandomNeigbour(n,m);
+            }
+            if (voisins.Count == 0)
+            {
+                RandomNeigbour(n-1,m-1);
+            }
+                
+
         }
     }
 }

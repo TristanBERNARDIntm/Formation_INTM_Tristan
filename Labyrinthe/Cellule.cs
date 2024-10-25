@@ -11,14 +11,12 @@ namespace Labyrinthe
 {
 	public class Cell
 	{
-		public int[,] coordonées;
 		public bool[] parois;
 		public bool visitée;
 		public string statut;
 
 		public Cell()
 		{
-			coordonées = new int[,]{{0},{0}};
 			parois = new bool[4] { false, false, false, false };
 			visitée = false;
 			statut = "simple";

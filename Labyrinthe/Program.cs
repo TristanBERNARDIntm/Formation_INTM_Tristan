@@ -13,8 +13,14 @@ namespace Labyrinthe
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Nombre de Colonnes : ");
+            int colonne = int.Parse(Console.ReadLine());
+            Console.WriteLine("Nombre de Lignes : ");
+            int ligne = int.Parse(Console.ReadLine());
+            
+
+
             // Keep the console window open
-            Console.WriteLine("----------------------");
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
         }

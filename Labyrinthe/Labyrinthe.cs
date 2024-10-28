@@ -73,7 +73,7 @@ namespace Labyrinthe
             Random rdm = new Random();
             int col = rdm.Next(0,n);
             int lig = rdm.Next(0,m);
-            int par = rdm.Next(0,3);
+            int par = rdm.Next(0,3); //0 = haut, 1 = droite, 2 = bas, 3 = gauche
             Open(col,lig,par);
         }
 
@@ -81,9 +81,25 @@ namespace Labyrinthe
         {
             Random rdm = new Random();
             List<KeyValuePair<int,int>>voisins = CloseNeighbors(n,m);
-            KeyValuePair<int,int> voisin = rdm.Next(voisins.Count);
+            KeyValuePair<int,int> voisin = rdm.Next(voisins);
             int nv = voisin.Key;
             int mv = voisin.Value;
+            if (nv == n + 1 && mv == m)
+            {
+                _cell[nv,mv].parois[1] = true;
+            }
+            if (nv == n && mv == m + 1)
+            {
+                _cell[nv,mv].parois[2] = true;
+            }
+            if (nv == n - 1 && mv == m)
+            {
+                _cell[nv,mv].parois[3] = true;
+            }
+            if (nv == n && mv == m - 1)
+            {
+                _cell[nv,mv].parois[0] = true;
+            }
             if (_cell[nv,mv].visitée == true && voisins.Count != 0)
             {
                 voisins.Remove(voisin);
@@ -91,10 +107,9 @@ namespace Labyrinthe
             }
             if (voisins.Count == 0)
             {
-                RandomNeigbour(n-1,m-1);
+                RandomNeigbour(n,m);
             }
-                
-
+            
         }
     }
 }

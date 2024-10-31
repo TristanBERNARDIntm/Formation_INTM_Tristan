@@ -18,7 +18,13 @@ namespace Labyrinthe
             Console.WriteLine("Nombre de Lignes : ");
             int ligne = int.Parse(Console.ReadLine());
             
-
+            Labyrinthe Labyrinthe = new Labyrinthe(colonne,ligne);
+            Labyrinthe.Generate(new KeyValuePair<int,int>(colonne,ligne));
+            List<StringBuilder> Grille = Labyrinthe.Display(colonne,ligne);
+            foreach (var n in Grille)
+            {
+                Console.WriteLine(n);
+            }
 
             // Keep the console window open
             Console.WriteLine("Press any key to exit.");

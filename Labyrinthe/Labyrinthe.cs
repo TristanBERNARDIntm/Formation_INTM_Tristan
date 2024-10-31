@@ -16,6 +16,17 @@ namespace Labyrinthe
         public Labyrinthe(int n, int m)
         {
             _cell = new Cell[n,m];
+            for (int i = 0; i < n ; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    _cell[i,j] = new Cell();
+                    if (i == 0 | j == 0 | i == n-1 | j == m-1)
+                    {
+                        _cell[i,j].extremité = true;
+                    }
+                }
+            }
         }
 
         public bool IsOpen(int i, int j, int w)
@@ -40,76 +51,140 @@ namespace Labyrinthe
             _cell[i,j].parois[w] = true;
         }
 
-        public List<KeyValuePair<int, int>> CloseNeighbors(int i, int j)
+        public List<KeyValuePair<int, int>> CloseNeighbors(int i, int j, int n, int m)
         {
             List<KeyValuePair<int, int>> voisins = new List<KeyValuePair<int, int>>();
-            for (int ii = i - 1; ii <= i + 1; ii++) 
-            {
-                if (ii != i && ii >= 0)
-                {
-                    voisins.Add(new KeyValuePair<int, int>(ii, j));
-                }
-            }
-            for (int jj = j - 1; jj <= j + 1; jj++)
-            {
-                if (jj != j && jj >= 0)
-                {
-                    voisins.Add(new KeyValuePair<int, int>(i, jj));
-                }
-            }
+            if (i > 0) voisins.Add(new KeyValuePair<int, int>(i - 1, j));
+            if (i < n - 1) voisins.Add(new KeyValuePair<int, int>(i + 1, j));
+            if (j > 0) voisins.Add(new KeyValuePair<int, int>(i, j - 1));
+            if (j < m - 1) voisins.Add(new KeyValuePair<int, int>(i, j + 1));
+            
             return voisins;
         }
 
         public void Generate(KeyValuePair<int,int> kvp)
         {
+            Random rdm = new Random();
+            Stack<KeyValuePair<int, int>> pile = new Stack<KeyValuePair<int, int>>();
+            KeyValuePair<int,int> coordCell = new KeyValuePair<int, int>();
             int n = kvp.Key;
             int m = kvp.Value;
-            RandomCell(n,m);
-            RandomNeigbour(n,m);
+
+            coordCell = RandomCell(n,m);
+            pile.Push(new KeyValuePair<int,int>(coordCell.Key,coordCell.Value));
+            _cell[coordCell.Key,coordCell.Value].visitée = true;
+
+            while (pile.Count > 0)
+            {   
+                var current = pile.Peek();
+                int i = current.Key;
+                int j = current.Value;
+                var neighbors = CloseNeighbors(i,j,n,m).Where(a => !_cell[a.Key, a.Value].visitée).ToList();
+                if (neighbors.Count != 0)
+                {
+                    var neighbor = neighbors[rdm.Next(neighbors.Count)];
+                    int k = neighbor.Key;
+                    int l = neighbor.Value;
+
+                    if (!_cell[k, l].visitée)
+                    {
+                        OpenWall(i, j, k, l);
+                        _cell[k, l].visitée = true;
+                        pile.Push(new KeyValuePair<int, int>(k, l));
+                    }
+                    else
+                    {
+                        pile.Pop();
+                    }
+                } 
+            }
+          //  KeyValuePair<int,int> coordEntree = new KeyValuePair<int, int>(RandomStartEnd(n,m);
+          //  _cell[coordEntree.Key,coordEntree.Value].statut = "entrée";
+          //  KeyValuePair<int,int> coordSortie = new KeyValuePair<int, int>(RandomStartEnd(n,m);
+          //  _cell[coordSortie.Key,coordSortie.Value].statut = "sortie";
         }
 
-        public void RandomCell(int n, int m)
+        public KeyValuePair<int,int> RandomCell(int n, int m)
         {
             Random rdm = new Random();
-            int col = rdm.Next(0,n);
-            int lig = rdm.Next(0,m);
-            int par = rdm.Next(0,3); //0 = haut, 1 = droite, 2 = bas, 3 = gauche
-            Open(col,lig,par);
+            KeyValuePair<int,int> coord = new KeyValuePair<int, int>(rdm.Next(0,n),rdm.Next(0,m));
+            return coord;
         }
 
-        public void RandomNeigbour(int n, int m)
+        public KeyValuePair<int,int> RandomStartEnd(int n, int m)
         {
             Random rdm = new Random();
-            List<KeyValuePair<int,int>>voisins = CloseNeighbors(n,m);
-            KeyValuePair<int,int> voisin = rdm.Next(voisins);
-            int nv = voisin.Key;
-            int mv = voisin.Value;
-            if (nv == n + 1 && mv == m)
+            KeyValuePair<int,int> coord = new KeyValuePair<int, int>(rdm.Next(0,n),rdm.Next(0,m));
+            if (_cell[coord.Key,coord.Value].extremité == true)
+            return coord;
+            else return RandomStartEnd(n,m);
+        }
+
+        public void OpenWall(int i, int j, int k, int l)
+        {
+            if (k == i + 1 && l == j)
             {
-                _cell[nv,mv].parois[1] = true;
+                _cell[k,l].parois[1] = true;
+                _cell[i,j].parois[3] = true;
             }
-            if (nv == n && mv == m + 1)
+            if (k == i && l == j + 1)
             {
-                _cell[nv,mv].parois[2] = true;
+                _cell[k,l].parois[2] = true;
+                _cell[i,j].parois[0] = true;
             }
-            if (nv == n - 1 && mv == m)
+            if (k == i - 1 && l == j)
             {
-                _cell[nv,mv].parois[3] = true;
+                _cell[k,l].parois[3] = true;
+                _cell[i,j].parois[1] = true;
             }
-            if (nv == n && mv == m - 1)
+            if (k == i && l == j - 1)
             {
-                _cell[nv,mv].parois[0] = true;
+                _cell[k,l].parois[0] = true;
+                _cell[i,j].parois[2] = true;
             }
-            if (_cell[nv,mv].visitée == true && voisins.Count != 0)
+        }
+
+        public StringBuilder DisplayLine(int n, int lig, int col)
+        {
+            StringBuilder ligne = new StringBuilder();
+            for (int i = 0; i <= col ; i++)
             {
-                voisins.Remove(voisin);
-                RandomNeigbour(n,m);
+                if (i == 0 && n == 0)
+                {
+                    ligne.Append("┌─");
+                }
+                else if (i == col && n == 0)
+                {
+                    ligne.Append("─┐");
+                }
+                else if(i==0 && n==lig)
+                {
+                    ligne.Append("└─");
+                }
+                else if(i == col && n == lig)
+                {
+                    ligne.Append("─┘");
+                }
+                else if(i !=0 && i != col && n == 0 | n == lig )
+                {
+                    ligne.Append("─");
+                }
+                else if(i == 0 && n != 0 && n != lig || i == col && n != lig)
+                {
+                    ligne.Append("│");
+                }
             }
-            if (voisins.Count == 0)
+            return ligne;
+        }
+
+        public List<StringBuilder> Display(int col, int lig)
+        {
+            List<StringBuilder> display = new List<StringBuilder>();
+            for (int j = 0; j <= lig ; j++ )
             {
-                RandomNeigbour(n,m);
+                display.Add(DisplayLine(j,col,lig));
             }
-            
+            return display;
         }
     }
 }

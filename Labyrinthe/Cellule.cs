@@ -13,13 +13,15 @@ namespace Labyrinthe
 	{
 		public bool[] parois;
 		public bool visitée;
-		public string statut;
+		public string statut; //simple, entrée ou sortie
+		public bool extremité;
 
 		public Cell()
 		{
-			parois = new bool[4] { false, false, false, false };
+			parois = new bool[4] { false, false, false, false }; //0 = haut, 1 = droite, 2 = bas, 3 = gauche
 			visitée = false;
-			statut = "simple";
+			statut = "simple"; 
+			extremité = false;
 		}
 	}
 }
